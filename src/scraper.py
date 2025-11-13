@@ -19,8 +19,7 @@ def get_soup(url):
         print(f"Successful Request to {url}")
     except requests.exceptions.RequestException as e:
         print(f"Error fetching: {e}")
-        exit()
-
+    
     return bs(response.text, 'html.parser')
 
 def get_text(url):
@@ -103,7 +102,7 @@ def parse_location(loc_str):
     lon, lat = [s.strip() for s in loc_str.split(",")]
     return float(lon), float(lat)
 
-def to_int(x):
+def clean_number(x, type):
     if x in ("---", ""):
         return None
     
@@ -117,33 +116,23 @@ def to_int(x):
         if pd.isna(x):
             return None
     except TypeError:
-        pass 
-
-    try:
-        return int(x)
-    except ValueError:
-        return None
-
-def to_float(x):
-    if x in ("---", ""):
-        return None
-
-    try:
-        if x[-1] in ("*","#"): # '*' and '#' often appear to add context to values 
-            x = x[:-1]   # ignore for now
-    except TypeError:
         pass
 
-    try:
-        if pd.isna(x):
+    if (type == "int"):
+        try:
+            return int(x)
+        except ValueError:
             return None
-    except TypeError:
-        pass 
+        
+    elif (type == "float"):
+        try:
+            return int(x)
+        except ValueError:
+            return None
+    
+    else:
+        print("Invalid type for clean_number funciton.")
 
-    try:
-        return float(x)
-    except ValueError:
-        return None
 
 # --- SCRAPER ---
 if __name__ == "__main__":
@@ -171,14 +160,14 @@ if __name__ == "__main__":
 
         # Insert observations
         for obs in df.itertuples(index=False):
-            year = to_int(getattr(obs, 'yyyy'))
-            month = to_int(getattr(obs, 'mm'))
-            af = to_int(getattr(obs, "af"))
+            year = clean_number(getattr(obs, 'yyyy'), "int")
+            month = clean_number(getattr(obs, 'mm'), "int")
+            af = clean_number(getattr(obs, "af"), "int")
 
-            tmax = to_float(getattr(obs, "tmax"))
-            tmin = to_float(getattr(obs, "tmin"))
-            rain = to_float(getattr(obs, "rain"))
-            sun = to_float(getattr(obs, "sun"))
+            tmax = clean_number(getattr(obs, "tmax"), "float")
+            tmin = clean_number(getattr(obs, "tmin"), "float")
+            rain = clean_number(getattr(obs, "rain"), "float")
+            sun = clean_number(getattr(obs, "sun"), "float")
             
             db.insert_observation(station_id, year, month, tmax, tmin, af, rain, sun)
         
