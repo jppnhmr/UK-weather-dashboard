@@ -126,7 +126,7 @@ def clean_number(x, type):
         
     elif (type == "float"):
         try:
-            return int(x)
+            return float(x)
         except ValueError:
             return None
     
@@ -136,6 +136,10 @@ def clean_number(x, type):
 
 # --- SCRAPER ---
 if __name__ == "__main__":
+    """
+    Retrieves Data from met office website, cleans it, then stores it in 
+    a local sqlite3 database file.
+    """
     print("-"*60)
     print("Beginning...")
     print("-"*60)
