@@ -3,6 +3,14 @@ import sqlite3
 from typing import List, Tuple, Any, Optional
 
 DATABASE_NAME = "historic_station_data"
+'''
+Column Information:
+tmax - Mean daily maximum tempurate (degC)
+tmin - Mean daily minimum tempurate (degC)
+af - Days of air frost
+rain - Total rainfal (mm)
+sun - Total sunshine duration (hours)
+'''
 
 def connect():
     conn = sqlite3.connect(f"{DATABASE_NAME}.db")
