@@ -1,11 +1,14 @@
 import sqlite3
 
+from typing import List, Tuple, Any, Optional
+
 DATABASE_NAME = "historic_station_data"
 
 def connect():
     conn = sqlite3.connect(f"{DATABASE_NAME}.db")
     return conn
 
+# Setup #
 def create_tables():
     conn = connect()
     cur = conn.cursor()
@@ -39,7 +42,7 @@ CREATE TABLE IF NOT EXISTS observations (
     conn.commit()
     conn.close()
 
-
+# Insert #
 def insert_station(name, lon, lat, opened, data_url):
     conn = connect()
     cur = conn.cursor()
@@ -70,3 +73,22 @@ def insert_observation(station_id, year, month, tmax, tmin, af, rain, sun):
 
     conn.commit()
     conn.close()
+
+# Select
+def select(query: str, params: Tuple[Any, ...] = ()) -> Optional [List[Tuple]]:
+    conn = connect()
+    cur = conn.cursor()
+
+    try:
+        cur.execute(query, params)
+
+        results = cur.fetchall()
+
+        return results
+    
+    except sqlite3.Error as e:
+        print(f"Error performing database query: {e}")
+        return None
+    
+    finally:
+        conn.close()

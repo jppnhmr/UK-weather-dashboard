@@ -9,3 +9,10 @@ https://www.metoffice.gov.uk/research/climate/maps-and-data/historic-station-dat
 pip install -r requirements.txt
 ## Usage
 python src/scraper.py
+
+
+## TODO
+- SQL select
+- statistics gathering
+- charts
+- map?
