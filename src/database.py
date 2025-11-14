@@ -16,7 +16,7 @@ def create_tables():
     cur.execute("""
 CREATE TABLE IF NOT EXISTS stations (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    name        TEXT NOT NULL,
+    name        TEXT NOT NULL UNIQUE,
     lon         REAL,
     lat         REAL,
     opened      INTEGER,
