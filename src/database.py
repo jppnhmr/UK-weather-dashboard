@@ -100,3 +100,19 @@ def select(query: str, params: Tuple[Any, ...] = ()) -> Optional [List[Tuple]]:
     
     finally:
         conn.close()
+
+# General Queries #
+def get_station(station_id: int):
+    query = """
+    SELECT id, name, lon, lat, opened, data_url
+    FROM stations
+    WHERE id = ?;
+    """
+    params = (station_id,)
+
+    data = select(query, params)
+    
+    if data:
+        return data[0]
+    else:
+        return None

@@ -146,6 +146,7 @@ def plot_station_temp_trend(station_id):
         print("Error fetching temperature data.")
         return
     station_name = get_station_name(station_id)
+    file_name = f"{GRAPH_OUTPUT_DIR}/{station_name}_temp_trend.png"
     df = pd.DataFrame(data, columns=['year', 'avg_tmax', 'avg_tmin', 'avg_temp'])
     plt.plot(df['year'], df['avg_temp'], color="black", label="Avg Temp")
     plt.plot(df['year'], df['avg_tmax'], color="red", label="Avg Tmax")
@@ -161,8 +162,10 @@ def plot_station_temp_trend(station_id):
     plt.title(f"Annual Temperature Trend for {station_name}")
     plt.legend()
     plt.grid()
-    plt.savefig(f"{GRAPH_OUTPUT_DIR}/{station_name}_temp_trend.png")
+    plt.savefig(file_name)
     plt.close()
+
+    return file_name
 
 def plot_overall_temp_trend():
     query = """
@@ -178,7 +181,8 @@ def plot_overall_temp_trend():
     if data is None:
         print("Error fetching temperature data.")
         return
-
+    
+    file_name = f"{GRAPH_OUTPUT_DIR}/overall_temp_trend.png"
     df = pd.DataFrame(data, columns=['year', 'avg_temp'])
     plt.scatter(df['year'], df['avg_temp'], color="black", label="Avg Temp")
 
@@ -198,8 +202,10 @@ def plot_overall_temp_trend():
     plt.title(f"Overall Annual Temperature Trend")
     plt.legend()
     plt.grid()
-    plt.savefig(f"{GRAPH_OUTPUT_DIR}/overall_temp_trend.png")
+    plt.savefig(file_name)
     plt.close()
+
+    return file_name
 
 def plot_monthly_rainfall():
     query = """
@@ -216,6 +222,7 @@ def plot_monthly_rainfall():
         print("Error fetching rainfall data.")
         return
 
+    file_name = f"{GRAPH_OUTPUT_DIR}/average_monthly_rainfall.png"
     df = pd.DataFrame(data, columns=['month', 'avg_rain'])
     df['month_name'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%b')
     plt.bar(df['month_name'], df['avg_rain'], color="blue")
@@ -224,8 +231,10 @@ def plot_monthly_rainfall():
     plt.ylabel("Average Rainfall (mm)")
     plt.title(f"Average Monthly Rainfall Across All Stations")
     plt.grid(axis='y')
-    plt.savefig(f"{GRAPH_OUTPUT_DIR}/average_monthly_rainfall.png")
+    plt.savefig(file_name)
     plt.close()
+
+    return file_name
 
 if __name__ == "__main__":
     plot_station_temp_trend(15)
