@@ -6,13 +6,19 @@ Gets data from:
 https://www.metoffice.gov.uk/research/climate/maps-and-data/historic-station-data
 
 ## Installation
-pip install -r requirements.txt
+> pip install -r requirements.txt
 ## Usage
-python src/scraper.py
+To scrape data and store in database:
+> python src/scraper.py
 
+To run API locally:
+> uvicorn src.api:app
+
+then go to [localhost:8000](http://localhost:8000/)
 
 ## TODO
-- graphs
-- statistics gathering
-- charts
-- map
+- Web interface for API
+- Expand API endpoints:
+    - Overall graphs
+    - Overall trends
+- Gather more data sources
