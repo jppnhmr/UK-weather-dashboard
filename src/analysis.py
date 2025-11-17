@@ -1,16 +1,23 @@
 import os
-import database as db
+import src.database as db
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
+import matplotlib.pyplot as plt
     
 GRAPH_OUTPUT_DIR = "graphs"
 os.makedirs(GRAPH_OUTPUT_DIR, exist_ok=True)
 
 class Station:
-    def __init__(self, id, name):
+    def __init__(self, id):
         self.id = id
-        self.name = name
+        self.name = None
+        self.lat = None
+        self.lon = None
+        self.opened = None
+        self.url = None
         self.stats = {}
 
     def add_stat(self, name, val):
@@ -18,6 +25,22 @@ class Station:
 
     def get_stat(self, name):
         return self.stats[name]
+    
+    def load_details(self):
+        data = db.get_station(self.id)
+        if data:
+            self.id = data[0]
+            self.name = data[1]
+            self.lon = data[2]
+            self.lat = data[3]
+            self.opened = data[4]
+            self.url = data[5]
+            return True
+        else:
+            return False
+
+    def __repr__(self):
+        return f"Station(id={self.id}, name={self.name}, stats={self.stats})"
 
 # Fetch #
 def list_stations():
@@ -27,7 +50,7 @@ def list_stations():
     """
 
     query = """
-    SELECT id, name FROM stations
+    SELECT id FROM stations
     """
 
     result = db.select(query)
@@ -35,7 +58,8 @@ def list_stations():
     if result:
         stations = []
         for station in result:
-            new_station = Station(station[0], station[1])
+            new_station = Station(station[0])
+            new_station.load_details()
             stations.append(new_station)
         return stations
     else:
@@ -127,6 +151,7 @@ def print_stations_by_avg_temp(desc: bool = True):
         print(f" {station.get_stat('avg_temp'):.2f}\t{station.name}")
 
 # Graphing #
+# Station-specific Graphs #
 def plot_station_temp_trend(station_id):
     query = """
     SELECT year, 
@@ -167,6 +192,69 @@ def plot_station_temp_trend(station_id):
 
     return file_name
 
+def plot_station_monthly_rainfall(station_id):
+    query = """
+    SELECT month, 
+        AVG(rain) AS avg_rain
+    FROM observations
+    WHERE station_id = ?
+    GROUP BY month
+    ORDER BY month;
+    """
+    params = (station_id,)
+
+    data = db.select(query, params)
+
+    if data is None:
+        print("Error fetching rainfall data.")
+        return
+    station_name = get_station_name(station_id)
+    file_name = f"{GRAPH_OUTPUT_DIR}/{station_name}_monthly_rainfall.png"
+    df = pd.DataFrame(data, columns=['month', 'avg_rain'])
+    df['month_name'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%b')
+    plt.bar(df['month_name'], df['avg_rain'], color="blue")
+
+    plt.xlabel("Month")
+    plt.ylabel("Average Rainfall (mm)")
+    plt.title(f"Average Monthly Rainfall for {station_name}")
+    plt.grid(axis='y')
+    plt.savefig(file_name)
+    plt.close()
+
+    return file_name
+
+def plot_station_monthly_sunshine(station_id):
+    query = """
+    SELECT month, 
+        AVG(sun) AS avg_sun
+    FROM observations
+    WHERE station_id = ?
+    GROUP BY month
+    ORDER BY month;
+    """
+    params = (station_id,)
+
+    data = db.select(query, params)
+
+    if data is None:
+        print("Error fetching sunshine data.")
+        return
+    station_name = get_station_name(station_id)
+    file_name = f"{GRAPH_OUTPUT_DIR}/{station_name}_monthly_sunshine.png"
+    df = pd.DataFrame(data, columns=['month', 'avg_sun'])
+    df['month_name'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%b')
+    plt.bar(df['month_name'], df['avg_sun'], color="orange")
+
+    plt.xlabel("Month")
+    plt.ylabel("Average Sunshine (hours)")
+    plt.title(f"Average Monthly Sunshine for {station_name}")
+    plt.grid(axis='y')
+    plt.savefig(file_name)
+    plt.close()
+
+    return file_name
+
+# Overall Graphs #
 def plot_overall_temp_trend():
     query = """
     SELECT year, 
