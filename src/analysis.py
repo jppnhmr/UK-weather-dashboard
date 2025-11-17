@@ -79,7 +79,7 @@ def print_stations_by_avg_rain(desc: bool = True):
     stations = list_stations()
     if stations is None:
         print("Error fetching stations list")
-        exit()
+        return
 
     # Get average rainfall for each station
     for station in stations:
@@ -101,8 +101,7 @@ def print_stations_by_avg_temp(desc: bool = True):
     stations = list_stations()
     if stations is None:
         print("Error fetching stations list")
-        exit()
-
+        return
     # Get average temperature for each station
     for station in stations:
         query = """
@@ -155,7 +154,7 @@ def plot_station_temp_trend(station_id):
     # Trend line for avg_temp
     z = np.polyfit(df['year'], df['avg_temp'], 1)
     p = np.poly1d(z)
-    plt.plot(df['year'], p(df['year']), "r--", label="Trend Line", color="grey")
+    plt.plot(df['year'], p(df['year']), "--", label="Trend Line", color="grey")
 
     plt.xlabel("Year")
     plt.ylabel("Temperature (ºC)")
@@ -186,7 +185,7 @@ def plot_overall_temp_trend():
     # Trend line for avg_temp
     z = np.polyfit(df['year'], df['avg_temp'], 1)
     p = np.poly1d(z)
-    plt.plot(df['year'], p(df['year']), "r--", label="Trend Line", color="red")
+    plt.plot(df['year'], p(df['year']), "--", label="Trend Line", color="red")
     temp_delta_per_century = z[0] * 100
     sign = '+' if temp_delta_per_century >= 0 else '-'
     # Include trend info box
@@ -202,6 +201,32 @@ def plot_overall_temp_trend():
     plt.savefig(f"{GRAPH_OUTPUT_DIR}/overall_temp_trend.png")
     plt.close()
 
+def plot_monthly_rainfall():
+    query = """
+    SELECT month, 
+        AVG(rain) AS avg_rain
+    FROM observations
+    GROUP BY month
+    ORDER BY month;
+    """
+
+    data = db.select(query)
+
+    if data is None:
+        print("Error fetching rainfall data.")
+        return
+
+    df = pd.DataFrame(data, columns=['month', 'avg_rain'])
+    plt.bar(df['month'], df['avg_rain'], color="blue")
+
+    plt.xlabel("Month")
+    plt.ylabel("Average Rainfall (mm)")
+    plt.title(f"Average Monthly Rainfall Across All Stations")
+    plt.grid(axis='y')
+    plt.savefig(f"{GRAPH_OUTPUT_DIR}/average_monthly_rainfall.png")
+    plt.close()
+
 if __name__ == "__main__":
     plot_station_temp_trend(15)
     plot_overall_temp_trend()
+    plot_monthly_rainfall()
