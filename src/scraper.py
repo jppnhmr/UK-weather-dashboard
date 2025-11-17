@@ -1,5 +1,5 @@
 
-import database as db
+import src.database as db
 
 import requests
 
@@ -86,14 +86,16 @@ def extract_station_data(url):
         # keep only rows where the first token is a year (4 digits)
         first = stripped.split()[0]
         if first.isdigit() and len(first) == 4:
-            data_lines.append(line)
+            fields = stripped.split()
+            data_lines.append(" ".join(fields[:7])) # only keep first 7 columns
         else:
             # line such as: 'Site Close' reached, stop searching for data
             break
 
     cleaned = "\n".join([header_line] + data_lines)
-
-    df = pd.read_fwf(StringIO(cleaned))
+ 
+    colsepcs = []
+    df = pd.read_csv(StringIO(cleaned), delimiter=r'\s+', header=0, engine='python')
 
     return df, units_line
 
