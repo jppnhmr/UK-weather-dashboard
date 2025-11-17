@@ -54,3 +54,11 @@ def get_overall_info():
     return {
         "graphs": filenames
     }
+
+@app.get("/overall/latitude")
+def get_overall_latitude_info():
+    filenames = analysis.plot_lat_against()
+
+    return {
+        "graphs": filenames
+    }

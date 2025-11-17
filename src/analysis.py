@@ -352,3 +352,82 @@ def plot_overall_monthly_sunshine():
     plt.close()
 
     return file_name
+
+def plot_lat_against():
+    query = """
+    SELECT s.lat,
+        AVG(o.rain) AS avg_rain,
+        AVG((o.tmax + o.tmin) / 2.0) AS avg_temp,
+        AVG(o.sun) AS avg_sun
+    FROM stations s
+    JOIN observations o ON s.id = o.station_id
+    GROUP BY s.id
+    ORDER BY s.lat;
+    """
+    data = db.select(query)
+
+    if data is None:
+        print("Error fetching latitude correlation data.")
+        return
+    
+    df = pd.DataFrame(data, columns=['lat', 'avg_rain', 'avg_temp', 'avg_sun'])
+
+    filenames = {}
+    filenames['rain'] = f"{GRAPH_OUTPUT_DIR}/lat_rain_correlation.png"
+
+    z = np.polyfit(df['lat'], df['avg_rain'], 1)
+    p = np.poly1d(z)
+    mm_per_degree = z[0]
+    plt.annotate(f"Trend: {mm_per_degree:.2f} mm/degree", xy=(0.05, 0.95), xycoords='axes fraction',
+                 fontsize=10, ha='left', va='top',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=1))
+    plt.plot(df['lat'], p(df['lat']), "--", label="Trend Line", color="red")
+    plt.legend()
+
+    plt.scatter(df['lat'], df['avg_rain'], color="blue")
+    plt.xlabel("Latitude")
+    plt.ylabel("Average Monthly Rainfall (mm)")
+    plt.title(f"Latitude vs Average Monthly Rainfall")
+    plt.grid()
+    plt.savefig(filenames['rain'])
+    plt.close()
+
+    filenames['temp'] = f"{GRAPH_OUTPUT_DIR}/lat_temp_correlation.png"
+
+    z = np.polyfit(df['lat'], df['avg_temp'], 1)
+    p = np.poly1d(z)
+    celsius_per_degree = z[0]
+    plt.annotate(f"Trend: {celsius_per_degree:.2f} ºC/degree", xy=(0.05, 0.95), xycoords='axes fraction',
+                 fontsize=10, ha='left', va='top',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=1))
+    plt.plot(df['lat'], p(df['lat']), "--", label="Trend Line", color="red")
+    plt.legend()
+
+    plt.scatter(df['lat'], df['avg_temp'], color="red")
+    plt.xlabel("Latitude")
+    plt.ylabel("Average Monthly Temperature (ºC)")
+    plt.title(f"Latitude vs Average Monthly Temperature")
+    plt.grid()
+    plt.savefig(filenames['temp'])
+    plt.close()
+
+    filenames['sun'] = f"{GRAPH_OUTPUT_DIR}/lat_sun_correlation.png"
+
+    z = np.polyfit(df['lat'], df['avg_sun'], 1)
+    p = np.poly1d(z)
+    hours_per_degree = z[0]
+    plt.annotate(f"Trend: {hours_per_degree:.2f} hours/degree", xy=(0.05, 0.95), xycoords='axes fraction',
+                 fontsize=10, ha='left', va='top',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=1))
+    plt.plot(df['lat'], p(df['lat']), "--", label="Trend Line", color="red")
+    plt.legend()
+
+    plt.scatter(df['lat'], df['avg_sun'], color="orange")
+    plt.xlabel("Latitude")
+    plt.ylabel("Average Monthly Sunshine (hours)")
+    plt.title(f"Latitude vs Average Monthly Sunshine")
+    plt.grid()
+    plt.savefig(filenames['sun'])
+    plt.close()
+
+    return filenames
