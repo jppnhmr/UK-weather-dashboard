@@ -217,7 +217,8 @@ def plot_monthly_rainfall():
         return
 
     df = pd.DataFrame(data, columns=['month', 'avg_rain'])
-    plt.bar(df['month'], df['avg_rain'], color="blue")
+    df['month_name'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%b')
+    plt.bar(df['month_name'], df['avg_rain'], color="blue")
 
     plt.xlabel("Month")
     plt.ylabel("Average Rainfall (mm)")
