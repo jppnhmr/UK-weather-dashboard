@@ -44,12 +44,13 @@ def get_station_info(station_id: int):
         "graphs": filenames
     }
 
-@app.get("/station/{station_id}/temperature")
-def get_station_temperature(station_id: int):
-    # Return temperature data for a station
-    pass
+@app.get("/overall")
+def get_overall_info():
+    filenames = {}
+    filenames['avg_temp_trend'] = analysis.plot_overall_temp_trend()
+    filenames['total_rainfall'] = analysis.plot_overall_monthly_rainfall()
+    filenames['total_sunshine'] = analysis.plot_overall_monthly_sunshine()
 
-@app.get("/station/{station_id}/rainfall")
-def get_rainfall_data(station_id: int):
-    # Return rainfall data for a station
-    pass
+    return {
+        "graphs": filenames
+    }

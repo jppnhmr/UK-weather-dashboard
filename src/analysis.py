@@ -295,7 +295,7 @@ def plot_overall_temp_trend():
 
     return file_name
 
-def plot_monthly_rainfall():
+def plot_overall_monthly_rainfall():
     query = """
     SELECT month, 
         AVG(rain) AS avg_rain
@@ -324,7 +324,7 @@ def plot_monthly_rainfall():
 
     return file_name
 
-def plot_monthly_sunshine():
+def plot_overall_monthly_sunshine():
     query = """
     SELECT month, 
         AVG(sun) AS avg_sun
