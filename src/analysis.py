@@ -324,7 +324,31 @@ def plot_monthly_rainfall():
 
     return file_name
 
-if __name__ == "__main__":
-    plot_station_temp_trend(15)
-    plot_overall_temp_trend()
-    plot_monthly_rainfall()
+def plot_monthly_sunshine():
+    query = """
+    SELECT month, 
+        AVG(sun) AS avg_sun
+    FROM observations
+    GROUP BY month
+    ORDER BY month;
+    """
+
+    data = db.select(query)
+
+    if data is None:
+        print("Error fetching sunshine data.")
+        return
+
+    file_name = f"{GRAPH_OUTPUT_DIR}/average_monthly_sunshine.png"
+    df = pd.DataFrame(data, columns=['month', 'avg_sun'])
+    df['month_name'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%b')
+    plt.bar(df['month_name'], df['avg_sun'], color="orange")
+
+    plt.xlabel("Month")
+    plt.ylabel("Average Sunshine (hours)")
+    plt.title(f"Average Monthly Sunshine Across All Stations")
+    plt.grid(axis='y')
+    plt.savefig(file_name)
+    plt.close()
+
+    return file_name
