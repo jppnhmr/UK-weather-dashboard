@@ -1,8 +1,11 @@
+import os
 import database as db
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import numpy as np
+    
 GRAPH_OUTPUT_DIR = "graphs"
+os.makedirs(GRAPH_OUTPUT_DIR, exist_ok=True)
 
 class Station:
     def __init__(self, id, name):
@@ -155,6 +158,8 @@ def plot_station_temp_trend(station_id):
     plt.legend()
     plt.grid()
     plt.savefig(f"{GRAPH_OUTPUT_DIR}/{station_name}_temp_trend.png")
+
+
 
 if __name__ == "__main__":
     #print_stations_by_avg_rain(True)
