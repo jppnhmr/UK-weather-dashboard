@@ -152,6 +152,11 @@ def plot_station_temp_trend(station_id):
     plt.plot(df['year'], df['avg_tmax'], color="red", label="Avg Tmax")
     plt.plot(df['year'], df['avg_tmin'], color="blue", label="Avg Tmin")
 
+    # Trend line for avg_temp
+    z = np.polyfit(df['year'], df['avg_temp'], 1)
+    p = np.poly1d(z)
+    plt.plot(df['year'], p(df['year']), "r--", label="Trend Line", color="grey")
+
     plt.xlabel("Year")
     plt.ylabel("Temperature (ºC)")
     plt.title(f"Temperature Trend for {station_name}")
@@ -159,9 +164,5 @@ def plot_station_temp_trend(station_id):
     plt.grid()
     plt.savefig(f"{GRAPH_OUTPUT_DIR}/{station_name}_temp_trend.png")
 
-
-
 if __name__ == "__main__":
-    #print_stations_by_avg_rain(True)
-    #print_stations_by_avg_temp(True)
     plot_station_temp_trend(13)
