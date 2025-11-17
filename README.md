@@ -12,7 +12,7 @@ python src/scraper.py
 
 
 ## TODO
-- SQL select
+- graphs
 - statistics gathering
 - charts
-- map?
+- map
