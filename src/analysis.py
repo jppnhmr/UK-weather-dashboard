@@ -159,10 +159,49 @@ def plot_station_temp_trend(station_id):
 
     plt.xlabel("Year")
     plt.ylabel("Temperature (ºC)")
-    plt.title(f"Temperature Trend for {station_name}")
+    plt.title(f"Annual Temperature Trend for {station_name}")
     plt.legend()
     plt.grid()
     plt.savefig(f"{GRAPH_OUTPUT_DIR}/{station_name}_temp_trend.png")
+    plt.close()
+
+def plot_overall_temp_trend():
+    query = """
+    SELECT year, 
+        AVG((tmax + tmin) / 2.0) AS avg_temp
+    FROM observations
+    GROUP BY year
+    ORDER BY year;
+    """
+
+    data = db.select(query)
+
+    if data is None:
+        print("Error fetching temperature data.")
+        return
+
+    df = pd.DataFrame(data, columns=['year', 'avg_temp'])
+    plt.scatter(df['year'], df['avg_temp'], color="black", label="Avg Temp")
+
+    # Trend line for avg_temp
+    z = np.polyfit(df['year'], df['avg_temp'], 1)
+    p = np.poly1d(z)
+    plt.plot(df['year'], p(df['year']), "r--", label="Trend Line", color="red")
+    temp_delta_per_century = z[0] * 100
+    sign = '+' if temp_delta_per_century >= 0 else '-'
+    # Include trend info box
+    plt.annotate(f"Trend: {sign}{temp_delta_per_century:.2f} ºC/century", xy=(0.05, 0.95), xycoords='axes fraction',
+                 fontsize=10, ha='left', va='top',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=1))
+
+    plt.xlabel("Year")
+    plt.ylabel("Temperature (ºC)")
+    plt.title(f"Overall Annual Temperature Trend")
+    plt.legend()
+    plt.grid()
+    plt.savefig(f"{GRAPH_OUTPUT_DIR}/overall_temp_trend.png")
+    plt.close()
 
 if __name__ == "__main__":
-    plot_station_temp_trend(13)
+    plot_station_temp_trend(15)
+    plot_overall_temp_trend()
