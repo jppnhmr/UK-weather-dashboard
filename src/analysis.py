@@ -71,7 +71,7 @@ def get_station_name(station_id):
         return None
 
 # CLI Output #
-def print_stations_by_avg_rain(desc: bool):
+def print_stations_by_avg_rain(desc: bool = True):
     
     stations = list_stations()
     if stations is None:
@@ -94,7 +94,7 @@ def print_stations_by_avg_rain(desc: bool):
     for station in sorted_stations:
         print(f" {station.get_stat('avg_rain'):.2f}\t{station.name}")
 
-def print_stations_by_avg_temp(desc: bool):
+def print_stations_by_avg_temp(desc: bool = True):
     stations = list_stations()
     if stations is None:
         print("Error fetching stations list")
