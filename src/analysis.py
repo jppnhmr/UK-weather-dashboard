@@ -260,6 +260,7 @@ def plot_overall_temp_trend():
     SELECT year, 
         AVG((tmax + tmin) / 2.0) AS avg_temp
     FROM observations
+    WHERE tmax IS NOT NULL AND tmin IS NOT NULL
     GROUP BY year
     ORDER BY year;
     """
@@ -300,6 +301,7 @@ def plot_overall_monthly_temp():
     SELECT month, 
         AVG((tmax + tmin) / 2.0) AS avg_temp
     FROM observations
+    WHERE tmax IS NOT NULL AND tmin IS NOT NULL
     GROUP BY month
     ORDER BY month;
     """
@@ -329,6 +331,7 @@ def plot_overall_rainfall_trend():
     SELECT year, 
         AVG(rain) AS avg_rain
     FROM observations
+    WHERE rain IS NOT NULL
     GROUP BY year
     ORDER BY year;
     """
@@ -369,6 +372,7 @@ def plot_overall_monthly_rainfall():
     SELECT month, 
         AVG(rain) AS avg_rain
     FROM observations
+    WHERE rain IS NOT NULL
     GROUP BY month
     ORDER BY month;
     """
@@ -398,6 +402,7 @@ def plot_overall_sunshine_trend():
     SELECT year, 
         AVG(sun) AS avg_sun
     FROM observations
+    WHERE sun IS NOT NULL
     GROUP BY year
     ORDER BY year;
     """
@@ -438,6 +443,7 @@ def plot_overall_monthly_sunshine():
     SELECT month, 
         AVG(sun) AS avg_sun
     FROM observations
+    WHERE sun IS NOT NULL
     GROUP BY month
     ORDER BY month;
     """

@@ -1,6 +1,7 @@
-# UK Weather Dashboard
-Python Dashboard for UK weather. 
-Uses SQLite database and BeautifulSoup4 for web scraping.
+# UK Weather Analysis
+Python Data Analysis Project for UK weather.
+
+Uses SQLite database, BeautifulSoup4 for web scraping and Jupyter Lab for the Notebook.
 
 Gets data from:
 https://www.metoffice.gov.uk/research/climate/maps-and-data/historic-station-data
@@ -14,11 +15,19 @@ To scrape data and store in database:
 To run API locally:
 > uvicorn src.api:app
 
-then go to [localhost:8000](http://localhost:8000/)
+Then go to the [Notebook](Notebook.ipynb) to view the summary.
+
+Or go to [localhost:8000/docs](http://localhost:8000/docs) to use api yourself.
+
+## Examples from the Notebook
+![tempurature_analysis](images/tempurature_screenshot.jpg)
+---
+![sunshine_lat_analysis](images/sun_lat_screenshot.jpg)
+---
+![sheffield_temp](images/bradford_data_screenshot.jpg)
+---
+
 
 ## TODO
-- Web interface for API
-- Expand API endpoints:
-    - Overall graphs
-    - Overall trends
-- Gather more data sources
+- Clean up Graph creation code.
+- Add Air Frost analysis.
