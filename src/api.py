@@ -14,7 +14,7 @@ def root():
 def get_stations():
     stations = analysis.list_stations()
     if stations is None:
-        return {"stations": []}
+        return {"error": "Unable to get stations."}
     else:
         return {
             "stations": [{"id": station.id, "name": station.name} for station in stations]
@@ -27,10 +27,11 @@ def get_station_info(station_id: int):
     if (not station.load_details()):
         return {"error": "Station not found."}
 
-    filenames = {}
-    filenames['temp_trend'] = analysis.plot_station_temp_trend(station.id)
-    filenames['monthly_rainfall'] = analysis.plot_station_monthly_rainfall(station.id)
-    filenames['monthly_sunshine'] = analysis.plot_station_monthly_sunshine(station.id)
+    filenames = {
+        'temp_trend': analysis.plot_station_temp_trend(station_id),
+        'monthly_rainfall': analysis.plot_station_monthly_rainfall(station_id),
+        'monthly_sunshine': analysis.plot_station_monthly_sunshine(station_id),
+    }
 
     return {
         "details": {
@@ -46,10 +47,11 @@ def get_station_info(station_id: int):
 
 @app.get("/overall")
 def get_overall_info():
-    filenames = {}
-    filenames['avg_temp_trend'] = analysis.plot_overall_temp_trend()
-    filenames['total_rainfall'] = analysis.plot_overall_monthly_rainfall()
-    filenames['total_sunshine'] = analysis.plot_overall_monthly_sunshine()
+    filenames = {
+        'avg_temp_trend': analysis.plot_overall_temp_trend(),
+        'total_rainfall': analysis.plot_overall_monthly_rainfall(),
+        'total_sunshine': analysis.plot_overall_monthly_sunshine(),
+    }
 
     return {
         "graphs": filenames
