@@ -9,7 +9,7 @@ https://www.metoffice.gov.uk/research/climate/maps-and-data/historic-station-dat
 > pip install -r requirements.txt
 ## Usage
 To scrape data and store in database:
-> python src/scraper.py
+> python -m src.scraper
 
 To run API locally:
 > uvicorn src.api:app
