@@ -49,6 +49,10 @@ def get_station_info(station_id: int):
 def get_overall_info():
     filenames = {
         'avg_temp_trend': analysis.plot_overall_temp_trend(),
+        'avg_rain_trend': analysis.plot_overall_rainfall_trend(),
+        'avg_sunshine_trend': analysis.plot_overall_sunshine_trend(),
+
+        'total_temp': analysis.plot_overall_monthly_temp(),
         'total_rainfall': analysis.plot_overall_monthly_rainfall(),
         'total_sunshine': analysis.plot_overall_monthly_sunshine(),
     }

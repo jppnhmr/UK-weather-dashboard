@@ -295,6 +295,75 @@ def plot_overall_temp_trend():
 
     return file_name
 
+def plot_overall_monthly_temp():
+    query = """
+    SELECT month, 
+        AVG((tmax + tmin) / 2.0) AS avg_temp
+    FROM observations
+    GROUP BY month
+    ORDER BY month;
+    """
+
+    data = db.select(query)
+
+    if data is None:
+        print("Error fetching rainfall data.")
+        return
+
+    file_name = f"{GRAPH_OUTPUT_DIR}/average_monthly_temp.png"
+    df = pd.DataFrame(data, columns=['month', 'avg_temp'])
+    df['month_name'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%b')
+    plt.bar(df['month_name'], df['avg_temp'], color="red")
+
+    plt.xlabel("Month")
+    plt.ylabel("Average Tempurature (°C)")
+    plt.title(f"Average Monthly Tempurature Across All Stations")
+    plt.grid(axis='y')
+    plt.savefig(file_name)
+    plt.close()
+
+    return file_name
+
+def plot_overall_rainfall_trend():
+    query = """
+    SELECT year, 
+        AVG(rain) AS avg_rain
+    FROM observations
+    GROUP BY year
+    ORDER BY year;
+    """
+
+    data = db.select(query)
+
+    if data is None:
+        print("Error fetching temperature data.")
+        return
+    
+    file_name = f"{GRAPH_OUTPUT_DIR}/overall_rainfall_trend.png"
+    df = pd.DataFrame(data, columns=['year', 'avg_rain'])
+    plt.scatter(df['year'], df['avg_rain'], color="black", label="Avg Rainfall")
+
+    # Trend line for avg_rain
+    z = np.polyfit(df['year'], df['avg_rain'], 1)
+    p = np.poly1d(z)
+    plt.plot(df['year'], p(df['year']), "--", label="Trend Line", color="blue")
+    rain_delta_per_century = z[0] * 100
+    sign = '+' if rain_delta_per_century >= 0 else '-'
+    # Include trend info box
+    plt.annotate(f"Trend: {sign}{rain_delta_per_century:.2f} mm/century", xy=(0.05, 0.95), xycoords='axes fraction',
+                 fontsize=10, ha='left', va='top',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=1))
+
+    plt.xlabel("Year")
+    plt.ylabel("Rainfall (mm)")
+    plt.title(f"Overall Annual Rainfall Trend")
+    plt.legend()
+    plt.grid()
+    plt.savefig(file_name)
+    plt.close()
+
+    return file_name
+
 def plot_overall_monthly_rainfall():
     query = """
     SELECT month, 
@@ -319,6 +388,46 @@ def plot_overall_monthly_rainfall():
     plt.ylabel("Average Rainfall (mm)")
     plt.title(f"Average Monthly Rainfall Across All Stations")
     plt.grid(axis='y')
+    plt.savefig(file_name)
+    plt.close()
+
+    return file_name
+
+def plot_overall_sunshine_trend():
+    query = """
+    SELECT year, 
+        AVG(sun) AS avg_sun
+    FROM observations
+    GROUP BY year
+    ORDER BY year;
+    """
+
+    data = db.select(query)
+
+    if data is None:
+        print("Error fetching sunshine data.")
+        return
+    
+    file_name = f"{GRAPH_OUTPUT_DIR}/overall_sunshine_trend.png"
+    df = pd.DataFrame(data, columns=['year', 'avg_sun'])
+    plt.scatter(df['year'], df['avg_sun'], color="black", label="Avg Sunshine")
+
+    # Trend line for avg_sun
+    z = np.polyfit(df['year'], df['avg_sun'], 1)
+    p = np.poly1d(z)
+    plt.plot(df['year'], p(df['year']), "--", label="Trend Line", color="orange")
+    sun_delta_per_century = z[0] * 100
+    sign = '+' if sun_delta_per_century >= 0 else '-'
+    # Include trend info box
+    plt.annotate(f"Trend: {sign}{sun_delta_per_century:.2f} hours/century", xy=(0.05, 0.95), xycoords='axes fraction',
+                 fontsize=10, ha='left', va='top',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=1))
+
+    plt.xlabel("Year")
+    plt.ylabel("Sunshine (hours)")
+    plt.title(f"Overall Annual Sunshine Trend")
+    plt.legend()
+    plt.grid()
     plt.savefig(file_name)
     plt.close()
 
